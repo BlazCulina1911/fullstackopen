@@ -1,5 +1,5 @@
 const SearchFilter = ({func}) => {
-    return(
+    return (
         <div>
             Search contacts: <input onChange={func}/>
         </div>
