@@ -2,6 +2,20 @@ const PORT = 3001
 
 const express = require('express')
 const app = express()
+const morgan = require('morgan')
+
+
+app.use(express.json())
+
+morgan.token('content', function getContentToken(req) {
+    if (Object.keys(req.body === 0)) {
+        return null
+    }
+    return JSON.stringify(req.body)
+})
+
+app.use(morgan(':method :url :status :res[content-length] :content'))
+
 
 let persons = [{
     "id": 1, "name": "Arto Hellas", "number": "040-123456"
@@ -13,7 +27,6 @@ let persons = [{
     "id": 4, "name": "Mary Poppendieck", "number": "39-23-6423122"
 }]
 
-app.use(express.json())
 
 const generateId = () => parseInt(Math.random() * 100000) //This bullshittery was required by the exercise.
 
