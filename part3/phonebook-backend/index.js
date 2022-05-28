@@ -1,7 +1,10 @@
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 
 const express = require('express')
+const cors = require('cors')
 const app = express()
+app.use(cors())
+app.use(express.static('build'))
 const morgan = require('morgan')
 
 
