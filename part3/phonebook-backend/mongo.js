@@ -1,5 +1,5 @@
 const mongo = require('mongo');
-const { default: mongoose } = require('mongoose');
+const mongoose = require('mongoose');
 
 let mode = 'noAction'
 let name = undefined
@@ -21,7 +21,7 @@ if (process.argv.length < 4){
 }
 const password = process.argv[2];
 
-const url = `mongodb+srv://blaz:${password}@phonebookcluster.zjcve.mongodb.net/phonebookApp?retryWrites=true&w=majority`
+
 
 mongoose.connect(url)
 
