@@ -9,6 +9,7 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static("build"));
 
+//Morgan token is used to log HTTP requests to the console
 morgan.token("content", function getContentToken(req) {
   if (Object.keys(req.body === 0)) {
     return null;
@@ -16,7 +17,12 @@ morgan.token("content", function getContentToken(req) {
   return JSON.stringify(req.body);
 });
 app.use(morgan(":method :url :status :res[content-length] :content"));
+//---------------------------------------------------
 
+
+
+
+//api/persons routes
 app.get("/api/persons", (request, response, next) => {
   Person.find({})
     .then((result) => {
@@ -37,30 +43,21 @@ app.get("/api/persons/:id", (request, response, next) => {
     .catch((error) => next(error));
 });
 
-app.get("/info", (request, response, next) => {
-  Person.count({})
-    .then(result => {
-      const string = `Phonebook has info on ${result} people`
-      response.send(string).end()
-    })
-    .catch((error) => next(error));
-});
-
 app.post("/api/persons", (request, response, next) => {
   const body = request.body;
   if (Object.keys(body).length === 0 || body === undefined) {
-    const error = { name: "ContentMissing" };
-    return next(error);
+    const err = { name: "ContentMissing" };
+    return next(err);
   }
   if (!body.name) {
-    const error = { name: "NameMissing" };
+    const err = { name: "NameMissing" };
 
-    return next(error);
+    return next(err);
   }
   if (!body.number) {
-    const error = { name: "NumberMissing" };
+    const err = { name: "NumberMissing" };
 
-    return next(error);
+    return next(err);
   }
 
   const person = new Person({ ...body });
@@ -84,13 +81,32 @@ app.delete("/api/persons/:id", (request, response, next) => {
     .then((result) => {
       if (result != null) response.sendStatus(204).end();
       else {
-        const error = { name: "IdNotFound" };
-        return next(error);
+        const err = { name: "IdNotFound" };
+        return next(err);
       }
     })
     .catch((error) => next(error));
 });
+//---------------------------------------------------
 
+
+
+
+//Info route required in the task
+app.get("/info", (request, response, next) => {
+  Person.count({})
+    .then(result => {
+      const string = `Phonebook has info on ${result} people`
+      response.send(string).end()
+    })
+    .catch((error) => next(error));
+});
+//---------------------------------------------------
+
+
+
+
+//Error handler required in the task (I really have no way of confirming did I use this right)
 const errorHandler = (error, request, response, next) => {
   console.error(error.message);
 
@@ -121,7 +137,8 @@ const errorHandler = (error, request, response, next) => {
   next(error);
 };
 
-// this has to be the last loaded middleware.
+
+//This has to be the last loaded in order for the next functions to work
 app.use(errorHandler);
 
 app.listen(process.env.PORT || 3001);
