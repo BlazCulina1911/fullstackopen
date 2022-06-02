@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-undef */
 const mongo = require('mongo');
 const mongoose = require('mongoose');
 
@@ -19,9 +21,6 @@ if (process.argv.length < 4){
   number = process.argv[4];
   console.log(`Attempt to save ${name} with number ${number} to the personsApp`);
 }
-const password = process.argv[2];
-
-
 
 mongoose.connect(url);
 

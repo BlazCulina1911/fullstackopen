@@ -1,10 +1,11 @@
+/* eslint-disable no-undef */
 const mongoose = require('mongoose');
 
 const url = process.env.MONGODB_URI;
 
 console.log('Attempting to connect to MongoDB');
 mongoose.connect(url)
-  .then(result => {
+  .then(() => {
     console.log('connected to MongoDB');
   })
   .catch((error) => {
