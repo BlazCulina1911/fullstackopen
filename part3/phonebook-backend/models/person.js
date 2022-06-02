@@ -1,39 +1,39 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
-const url = process.env.MONGODB_URI
+const url = process.env.MONGODB_URI;
 
-console.log('Attempting to connect to MongoDB')
+console.log('Attempting to connect to MongoDB');
 mongoose.connect(url)
-.then(result => {
-    console.log('connected to MongoDB')
-})
-.catch((error) => {
-    console.log('error connecting to MongoDB:', error.message)
-})
+  .then(result => {
+    console.log('connected to MongoDB');
+  })
+  .catch((error) => {
+    console.log('error connecting to MongoDB:', error.message);
+  });
 
 const personSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        minlength: 3,
+  name: {
+    type: String,
+    minlength: 3,
+  },
+  number: {
+    type: String,
+    minlength: 8,
+    validate: {
+      validator: function(v) {
+        return /^\d{2,3}-\d*$/.test(v);
+      }
     },
-    number: {
-        type: String,
-        minlength: 8,
-        validate: {
-        validator: function(v) {
-            return /^\d{2,3}-\d*$/.test(v);
-          }
-        },
-        required: true
-    }
-})
+    required: true
+  }
+});
 
 personSchema.set('toJSON', {
-    transform: (document, returnedObject) => {
-        returnedObject.id = returnedObject._id.toString()
-        delete returnedObject._id
-        delete returnedObject.__v
-    }
-})
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString();
+    delete returnedObject._id;
+    delete returnedObject.__v;
+  }
+});
 
-module.exports = mongoose.model('Person', personSchema)
+module.exports = mongoose.model('Person', personSchema);
