@@ -71,6 +71,14 @@ function App() {
                 setTimeout(() => {
                     setNotificationObject(null)
                 }, 5000)
+            }).catch(error => {
+                setNotificationObject({
+                    message: error.response.data.error,
+                    mode: false
+                })
+                setTimeout(() => {
+                    setNotificationObject(null)
+                }, 5000)
             })
         }
     }

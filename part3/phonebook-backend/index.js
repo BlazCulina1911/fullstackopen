@@ -119,6 +119,7 @@ const errorHandler = (error, request, response, next) => {
   if (error.name === "ContentMissing") {
     return response.status(400).send({ error: "malformatted object" });
   }
+
   if (error.name === "NameMissing") {
     return response
       .status(400)
@@ -132,6 +133,10 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === "CastError") {
     return response.status(400).send({ error: "malformatted id" });
+  }
+
+  if (error.name === "ValidationError") {
+    return response.status(400).send({error: "Check the number input!"})
   }
 
   next(error);
