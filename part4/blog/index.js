@@ -25,3 +25,6 @@ const PORT = process.env.PORT || 3001;
 app.listen(process.env.PORT || 3001, () => {
     console.log(`Application running on PORT ${PORT}`);
 });
+
+//placed this export here for the testing section
+module.exports = app;
