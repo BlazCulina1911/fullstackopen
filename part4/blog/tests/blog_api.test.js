@@ -28,11 +28,32 @@ test("post request makes a blog", async () => {
 
     const secondResponse = await api.get("/api/blogs");
     const afterLength = secondResponse.body.length;
-
-    //Placed await here because the program does a forced exit and interrupts this function
-    await Blog.deleteOne({url: "test"});
  
     expect(initialLength < afterLength).toBe(true);
+});
+
+test("put request updates a blog", async () => {
+    const blog = await Blog.findOne({url:"test"});
+    const blogId = blog.id;
+
+    console.log("HELLO", blog);
+
+    blog.likes = 1337;
+
+    console.log("UPDATED", blog);
+
+    console.log(blogId);
+
+    const updatedBlog = await api.put(`/api/blogs/${blogId}`, blog);
+
+    expect(updatedBlog.body.likes).toBe(blog.likes);
+});
+
+test("delete request deletes a blog", async () => {
+    const blog = await Blog.findOne({url:"test"});
+    await api.del(`/api/blogs/${blog.id}`);
+    const noBlog = await Blog.findOne({url:"test"});
+    expect(noBlog).toBe(null);
 });
 
 afterAll(() => mongoose.connection.close());
