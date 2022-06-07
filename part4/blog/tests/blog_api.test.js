@@ -36,15 +36,9 @@ test("put request updates a blog", async () => {
     const blog = await Blog.findOne({url:"test"});
     const blogId = blog.id;
 
-    console.log("HELLO", blog);
+    const newLikes = 1337;
 
-    blog.likes = 1337;
-
-    console.log("UPDATED", blog);
-
-    console.log(blogId);
-
-    const updatedBlog = await api.put(`/api/blogs/${blogId}`, blog);
+    const updatedBlog = await api.put(`/api/blogs/${blogId}`, {likes: newLikes});
 
     expect(updatedBlog.body.likes).toBe(blog.likes);
 });
