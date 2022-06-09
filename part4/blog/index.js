@@ -17,19 +17,22 @@ mongoose.connect(mongoUrl)
 app.use(cors());
 app.use(express.json());
 
+const middleware = require("./utils/middleware");
+
 const usersRouter = require("./routes/users");
 const loginRouter = require("./routes/login");
 const blogRouter = require("./routes/blogs");
+
 app.use("/api/users", usersRouter);
 app.use("/api/login", loginRouter);
-app.use("/api/blogs", blogRouter);
+app.use("/api/blogs", middleware.tokenExtractor, blogRouter);
 
 
 
 const PORT = process.env.PORT || 3001;
-app.listen(process.env.PORT || 3001, () => {
+const server = app.listen(process.env.PORT || 3001, () => {
     console.log(`Application running on PORT ${PORT}`);
 });
 
 //placed this export here for the testing section
-module.exports = app;
+module.exports = server;

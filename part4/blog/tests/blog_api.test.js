@@ -1,8 +1,10 @@
 const mongoose = require("mongoose");
 const Blog = require("../models/blog");
+const User = require("../models/user");
 const supertest = require("supertest");
 
 const app = require("../index");
+const { application } = require("express");
 
 const api = supertest(app);
 
@@ -24,7 +26,7 @@ test("post request makes a blog", async () => {
     const response = await api.get("/api/blogs");
     const initialLength = response.body.length;
 
-    await blog.save();
+    await api.post()
 
     const secondResponse = await api.get("/api/blogs");
     const afterLength = secondResponse.body.length;
@@ -50,4 +52,7 @@ test("delete request deletes a blog", async () => {
     expect(noBlog).toBe(null);
 });
 
-afterAll(() => mongoose.connection.close());
+afterAll(async () => {
+    mongoose.connection.close();
+    app.close();
+});

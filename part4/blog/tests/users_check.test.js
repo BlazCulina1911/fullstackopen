@@ -20,4 +20,7 @@ test("existing invalid users in DB", async () => {
     expect(invalidUsers).toHaveLength(0);
 }, 50000) 
 
-afterAll(() => mongoose.connection.close());
+afterAll(async () => {
+    mongoose.connection.close();
+    app.close();
+});

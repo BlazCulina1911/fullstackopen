@@ -1,50 +1,86 @@
 const blogsRouter = require("express").Router();
 const Blog = require("../models/blog");
+const jwt = require("jsonwebtoken");
+const User = require("../models/user");
 
-blogsRouter.get("/", (req, res) => {
-    Blog
+blogsRouter.get("/", async (req, res) => {
+    const blogs = await Blog
         .find({})
-        .populate("user")
-        .then(blogs => {
-            res.json(blogs);
-        });
+        .populate("user");
+
+    return res.send(blogs);
 });
 
-blogsRouter.get("/:id", (req, res) => {
-    Blog
+blogsRouter.get("/:id", async (req, res) => {
+    const blog = await Blog
         .findById(req.params.id)
-        .populate("user")
-        .then(blog => {
-            res.json(blog);
-        });
+        .populate("user");
+
+    return res.status(200).json(blog);
 });
 
-blogsRouter.post("/", (req, res) => {
+blogsRouter.post("/", async (req, res) => {
     const blog = new Blog(req.body);
+    const jwtToken = req.token;
 
-    blog
-        .save()
-        .then((blog) => {
-            res.status(201).json(blog);
-        });
+    if (!jwtToken) {
+        return res.status(401).json({ error: "token for this action is required!" });
+    }
+    const authorized = jwt.verify(jwtToken, process.env.SECRET);
+    if (!authorized) {
+        return res.status(401).json({ error: "token expired or incorrect" });
+    }
+    const user = await User.findById(authorized.id);
+    if (!user) {
+        return res.status(401).json({ error: "user has been deleted" });
+    }
+
+    blog.user = user.id;
+
+    const savedBlog = await blog.save();
+
+    user.blogs = user.blogs.concat(savedBlog.id);
+
+    await user.save();
+
+    return res.status(201).json(savedBlog);
 });
 
 blogsRouter.put("/:id", (req, res) => {
     const newBlog = req.body;
-    Blog.findByIdAndUpdate(req.params.id, newBlog, {new: true})
-        .populate("user")
-        .then((result) => {
-            res.status(200).json(result);
-        });
+    Blog.findByIdAndUpdate(req.params.id, newBlog, { new: true })
+        .populate("user");
+
+    res.status(200).json(result);
 });
 
-blogsRouter.delete("/:id", (req, res) => {
+blogsRouter.delete("/:id", async (req, res) => {
     const id = req.params.id;
+    const jwtToken = req.token;
 
-    Blog.findByIdAndRemove(id)
-        .then(() => {
-            res.sendStatus(204);
-        });
+    if (!jwtToken) {
+        return res.status(401).json({ error: "token for this action is required!" });
+    }
+    const authorized = jwt.verify(jwtToken, process.env.SECRET);
+    if (!authorized) {
+        return res.status(401).json({ error: "token expired or incorrect" });
+    }
+    const user = await User.findById(authorized.id);
+    if (!user) {
+        return res.status(401).json({ error: "user has been deleted" });
+    }
+
+    const blog = await Blog.findById(id);
+
+    if (blog.user.toString() != authorized.id) {
+        return res.status(401).send({ error: "can't delete blogs made by other users" });
+    }
+
+    await Blog.findByIdAndRemove(id);
+    user.blogs = user.blogs.filter(b => b != id);
+    await user.save();
+
+    return res.sendStatus(204);
 });
 
 module.exports = blogsRouter;
