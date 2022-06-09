@@ -17,8 +17,13 @@ mongoose.connect(mongoUrl)
 app.use(cors());
 app.use(express.json());
 
-const userRouter = require("./routes/blogs");
-app.use("/api/blogs", userRouter);
+const usersRouter = require("./routes/users");
+const loginRouter = require("./routes/login");
+const blogRouter = require("./routes/blogs");
+app.use("/api/users", usersRouter);
+app.use("/api/login", loginRouter);
+app.use("/api/blogs", blogRouter);
+
 
 
 const PORT = process.env.PORT || 3001;

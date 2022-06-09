@@ -1,24 +1,25 @@
-const express = require("express");
+const blogsRouter = require("express").Router();
 const Blog = require("../models/blog");
-const router = express.Router();
 
-router.get("/", (req, res) => {
+blogsRouter.get("/", (req, res) => {
     Blog
         .find({})
+        .populate("user")
         .then(blogs => {
             res.json(blogs);
         });
 });
 
-router.get("/:id", (req, res) => {
+blogsRouter.get("/:id", (req, res) => {
     Blog
         .findById(req.params.id)
+        .populate("user")
         .then(blog => {
             res.json(blog);
         });
 });
 
-router.post("/", (req, res) => {
+blogsRouter.post("/", (req, res) => {
     const blog = new Blog(req.body);
 
     blog
@@ -28,15 +29,16 @@ router.post("/", (req, res) => {
         });
 });
 
-router.put("/:id", (req, res) => {
+blogsRouter.put("/:id", (req, res) => {
     const newBlog = req.body;
     Blog.findByIdAndUpdate(req.params.id, newBlog, {new: true})
+        .populate("user")
         .then((result) => {
             res.status(200).json(result);
         });
 });
 
-router.delete("/:id", (req, res) => {
+blogsRouter.delete("/:id", (req, res) => {
     const id = req.params.id;
 
     Blog.findByIdAndRemove(id)
@@ -45,4 +47,4 @@ router.delete("/:id", (req, res) => {
         });
 });
 
-module.exports = router;
+module.exports = blogsRouter;
