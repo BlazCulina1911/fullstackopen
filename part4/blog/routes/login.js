@@ -17,18 +17,18 @@ loginRouter.post("/", async (req, res) => {
         return res.status(400).json({error: "password not correct"});
     }
 
-    userForToken = {
+    const userForToken = {
         username: existingUser.username,
         id: existingUser.id
-    }
+    };
 
     const token = jwt.sign(
         userForToken,
         process.env.SECRET,
         {expiresIn: 60*60}
-        );
+    );
 
     return res.status(200).json(token);
-})
+});
 
-module.exports = loginRouter
+module.exports = loginRouter;

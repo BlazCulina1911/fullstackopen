@@ -4,7 +4,6 @@ const User = require("../models/user");
 const supertest = require("supertest");
 
 const app = require("../index");
-const { application } = require("express");
 
 const api = supertest(app);
 
@@ -13,7 +12,7 @@ const accountDetails = {
     name: "A P I T E S T E R",
     username: "APItest",
     password: "test"
-}
+};
 
 let token;
 
@@ -24,15 +23,15 @@ beforeAll(async () => {
 
     accountDetails.id = registerResponse.body.id;
 
-    loginResponse = await api
+    const loginResponse = await api
         .post("/api/login")
         .send({
             username: accountDetails.username,
             password: accountDetails.password
         });
 
-    token = "bearer " + loginResponse.body; 
-})
+    token = "bearer " + loginResponse.body;
+});
 
 test("correct amount of blogs is returned", async () => {
     const response = await api.get("/api/blogs");
@@ -41,6 +40,21 @@ test("correct amount of blogs is returned", async () => {
     expect(response.body).toHaveLength(numberOfBlogs);
 }, 100000);
 
+test("post fails without token and returns 401", async () => {
+    const blog = {
+        title: "Bukača",
+        author: "Rojs",
+        url: "test",
+        likes: 72,
+    };
+
+    const response = await api
+        .post("/api/blogs")
+        .send(blog);
+
+    expect(response.status).toBe(401);
+    expect(response.body.error).toBe("token for this action is required!");
+});
 
 test("post request makes a blog", async () => {
     const blog = {
@@ -54,8 +68,8 @@ test("post request makes a blog", async () => {
     const initialLength = response.body.length;
 
     await api.post("/api/blogs")
-    .set({authorization: token})
-    .send(blog);
+        .set({ authorization: token })
+        .send(blog);
 
     const secondResponse = await api.get("/api/blogs");
     const afterLength = secondResponse.body.length;
@@ -77,8 +91,8 @@ test("put request updates a blog", async () => {
 test("delete request deletes a blog", async () => {
     const blog = await Blog.findOne({ url: "test" });
     await api
-    .del(`/api/blogs/${blog.id}`)
-    .set({authorization: token});
+        .del(`/api/blogs/${blog.id}`)
+        .set({ authorization: token });
     const noBlog = await Blog.findOne({ url: "test" });
     expect(noBlog).toBe(null);
 }, 50000);
