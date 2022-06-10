@@ -3,7 +3,7 @@ const User = require("../models/user");
 const supertest = require("supertest");
 
 
-//TODO fix tests to run in band without error!
+//This is just here because of an exercise.
 
 const app = require("../index");
 

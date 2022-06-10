@@ -8,7 +8,8 @@
     "dev": "cross-env NODE_ENV=development nodemon",
     "lint": "eslint .",
     "lintfix": "eslint . --fix",
-    "test": "cross-env NODE_ENV=test jest --verbose --runInBand --forceExit"
+    "test": "cross-env NODE_ENV=test jest --verbose --runInBand --forceExit",
+    "testsilent": "cross-env NODE_ENV=test jest --runInBand --forceExit"
   },
   "author": "Blaž Čulina",
   "license": "ISC",

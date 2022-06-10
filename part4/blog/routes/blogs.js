@@ -46,11 +46,10 @@ blogsRouter.post("/", async (req, res) => {
     return res.status(201).json(savedBlog);
 });
 
-blogsRouter.put("/:id", (req, res) => {
+blogsRouter.put("/:id", async (req, res) => {
     const newBlog = req.body;
-    Blog.findByIdAndUpdate(req.params.id, newBlog, { new: true })
+    const result = await Blog.findByIdAndUpdate(req.params.id, newBlog, { new: true })
         .populate("user");
-
     res.status(200).json(result);
 });
 
